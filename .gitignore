@@ -1,0 +1,42 @@
+# Rust build artifacts
+/target/
+**/*.rs.bk
+Cargo.lock
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# CUDA build artifacts
+*.o
+*.a
+*.so
+*.ptx
+*.cubin
+*.fatbin
+
+# Benchmark results (keep the directory, ignore results)
+/target/criterion/
+
+# Coverage
+*.gcda
+*.gcno
+*.gcov
+coverage/
+*.profraw
+*.profdata
+
+# Documentation build
+/target/doc/
+
+# Temporary files
+*.tmp
+*.temp
+*.log

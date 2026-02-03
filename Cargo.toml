@@ -1,0 +1,73 @@
+[package]
+name = "bonsai-trie-gpu"
+version = "0.1.0"
+edition = "2021"
+description = "GPU-accelerated Pedersen hashing for Starknet's bonsai-trie"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/mohiiit/bonsai-trie-gpu"
+keywords = ["starknet", "pedersen", "gpu", "cuda", "merkle-trie"]
+categories = ["cryptography", "algorithms"]
+
+[features]
+default = ["std"]
+std = ["starknet-types-core/std"]
+cuda = ["dep:cudarc"]
+# Enable benchmarking features
+bench = []
+
+[dependencies]
+# Core Starknet types - same version as bonsai-trie
+starknet-types-core = { version = "0.2.1", default-features = false, features = [
+    "hash",
+    "alloc",
+] }
+
+# Big integer arithmetic for field operations
+num-bigint = { version = "0.4", default-features = false }
+num-traits = { version = "0.2", default-features = false }
+num-integer = { version = "0.1", default-features = false }
+
+# Serialization
+serde = { version = "1.0", default-features = false, features = ["derive", "alloc"] }
+
+# Error handling
+thiserror = { version = "2.0", default-features = false }
+
+# CUDA bindings (optional)
+cudarc = { version = "0.12", optional = true }
+
+# Hex encoding for constants
+hex = { version = "0.4", default-features = false, features = ["alloc"] }
+
+# Lazy initialization
+once_cell = { version = "1.19", default-features = false }
+
+[dev-dependencies]
+# Property-based testing
+proptest = "1.4"
+
+# Benchmarking
+criterion = { version = "0.5", features = ["html_reports"] }
+
+# Reference implementation for differential testing
+starknet-crypto = "0.7"
+
+# Random number generation for tests
+rand = { version = "0.8", features = ["small_rng"] }
+
+# Test utilities
+rstest = "0.18"
+
+[[bench]]
+name = "pedersen"
+harness = false
+required-features = ["bench"]
+
+[profile.release]
+lto = true
+codegen-units = 1
+opt-level = 3
+
+[profile.bench]
+lto = true
+codegen-units = 1
