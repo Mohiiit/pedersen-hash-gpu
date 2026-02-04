@@ -22,8 +22,8 @@
 __constant__ uint64_t STARK_PRIME[4] = {
     0x0000000000000001ULL,
     0x0000000000000000ULL,
-    0x0000000000000011ULL,
-    0x0800000000000000ULL
+    0x0000000000000000ULL,
+    0x0800000000000011ULL
 };
 
 // Montgomery constants (from Rust field/constants.rs)
@@ -165,6 +165,37 @@ typedef struct {
 // Field Utilities
 //==============================================================================
 
+__device__ __forceinline__ uint64_t add_with_carry(uint64_t a, uint64_t b, uint64_t* carry) {
+    uint64_t sum = a + b;
+    uint64_t c1 = sum < a;
+    sum += *carry;
+    uint64_t c2 = sum < *carry;
+    *carry = c1 | c2;
+    return sum;
+}
+
+__device__ __forceinline__ uint64_t sub_with_borrow(uint64_t a, uint64_t b, uint64_t* borrow) {
+    uint64_t res = a - b;
+    uint64_t b1 = a < b;
+    uint64_t res2 = res - *borrow;
+    uint64_t b2 = res < *borrow;
+    *borrow = b1 | b2;
+    return res2;
+}
+
+__device__ __forceinline__ void mul_add(uint64_t a, uint64_t b, uint64_t* acc, uint64_t* carry) {
+    uint64_t lo = a * b;
+    uint64_t hi = __umul64hi(a, b);
+
+    uint64_t sum = lo + *acc;
+    uint64_t c1 = sum < lo;
+    sum += *carry;
+    uint64_t c2 = sum < *carry;
+    *acc = sum;
+
+    *carry = hi + c1 + c2;
+}
+
 __device__ __forceinline__ void field_from_const(FieldElement* out, const uint64_t c[4]) {
     out->limbs[0] = c[0];
     out->limbs[1] = c[1];
@@ -194,18 +225,13 @@ __device__ __forceinline__ void field_add(FieldElement* result, const FieldEleme
     uint64_t carry = 0;
 
     for (int i = 0; i < 4; i++) {
-        unsigned __int128 sum = (unsigned __int128)a->limbs[i] + b->limbs[i] + carry;
-        result->limbs[i] = (uint64_t)sum;
-        carry = (uint64_t)(sum >> 64);
+        result->limbs[i] = add_with_carry(a->limbs[i], b->limbs[i], &carry);
     }
 
     if (carry || field_ge_prime(result)) {
         uint64_t borrow = 0;
         for (int i = 0; i < 4; i++) {
-            unsigned __int128 bi = (unsigned __int128)STARK_PRIME[i] + borrow;
-            unsigned __int128 ri = (unsigned __int128)result->limbs[i];
-            result->limbs[i] = (uint64_t)(ri - bi);
-            borrow = (ri < bi) ? 1 : 0;
+            result->limbs[i] = sub_with_borrow(result->limbs[i], STARK_PRIME[i], &borrow);
         }
     }
 }
@@ -215,18 +241,13 @@ __device__ __forceinline__ void field_sub(FieldElement* result, const FieldEleme
     uint64_t borrow = 0;
 
     for (int i = 0; i < 4; i++) {
-        unsigned __int128 bi = (unsigned __int128)b->limbs[i] + borrow;
-        unsigned __int128 ai = (unsigned __int128)a->limbs[i];
-        result->limbs[i] = (uint64_t)(ai - bi);
-        borrow = (ai < bi) ? 1 : 0;
+        result->limbs[i] = sub_with_borrow(a->limbs[i], b->limbs[i], &borrow);
     }
 
     if (borrow) {
         uint64_t carry = 0;
         for (int i = 0; i < 4; i++) {
-            unsigned __int128 sum = (unsigned __int128)result->limbs[i] + STARK_PRIME[i] + carry;
-            result->limbs[i] = (uint64_t)sum;
-            carry = (uint64_t)(sum >> 64);
+            result->limbs[i] = add_with_carry(result->limbs[i], STARK_PRIME[i], &carry);
         }
     }
 }
@@ -238,18 +259,15 @@ __device__ __forceinline__ void montgomery_reduce(uint64_t t[8], FieldElement* o
         uint64_t carry = 0;
 
         for (int j = 0; j < 4; j++) {
-            unsigned __int128 prod = (unsigned __int128)m * STARK_PRIME[j];
-            unsigned __int128 acc = (unsigned __int128)t[i + j] + prod + carry;
-            t[i + j] = (uint64_t)acc;
-            carry = (uint64_t)(acc >> 64);
+            mul_add(m, STARK_PRIME[j], &t[i + j], &carry);
         }
 
         // propagate carry into higher limbs
         int k = i + 4;
         while (carry && k < 8) {
-            unsigned __int128 acc = (unsigned __int128)t[k] + carry;
-            t[k] = (uint64_t)acc;
-            carry = (uint64_t)(acc >> 64);
+            uint64_t acc = t[k] + carry;
+            carry = (acc < t[k]) ? 1 : 0;
+            t[k] = acc;
             k++;
         }
     }
@@ -273,18 +291,15 @@ __device__ __forceinline__ void field_mul(FieldElement* result, const FieldEleme
     for (int i = 0; i < 4; i++) {
         uint64_t carry = 0;
         for (int j = 0; j < 4; j++) {
-            unsigned __int128 prod = (unsigned __int128)a->limbs[i] * b->limbs[j];
-            unsigned __int128 acc = (unsigned __int128)t[i + j] + prod + carry;
-            t[i + j] = (uint64_t)acc;
-            carry = (uint64_t)(acc >> 64);
+            mul_add(a->limbs[i], b->limbs[j], &t[i + j], &carry);
         }
 
         // add carry to next limb(s)
         int k = i + 4;
         while (carry && k < 8) {
-            unsigned __int128 acc = (unsigned __int128)t[k] + carry;
-            t[k] = (uint64_t)acc;
-            carry = (uint64_t)(acc >> 64);
+            uint64_t acc = t[k] + carry;
+            carry = (acc < t[k]) ? 1 : 0;
+            t[k] = acc;
             k++;
         }
     }
@@ -737,6 +752,158 @@ extern "C" __global__ void pedersen_hash_batch(
 //==============================================================================
 // Utility Kernels
 //==============================================================================
+
+/**
+ * Copies field elements from inputs to outputs.
+ */
+extern "C" __global__ void field_copy_batch(
+    const FieldElement* __restrict__ inputs,
+    FieldElement* __restrict__ outputs,
+    const int N)
+{
+    int tid = blockIdx.x * blockDim.x + threadIdx.x;
+    if (tid >= N) return;
+    outputs[tid] = inputs[tid];
+}
+
+/**
+ * Converts standard field elements to Montgomery form.
+ */
+extern "C" __global__ void field_to_mont_batch(
+    const FieldElement* __restrict__ inputs,
+    FieldElement* __restrict__ outputs,
+    const int N)
+{
+    int tid = blockIdx.x * blockDim.x + threadIdx.x;
+    if (tid >= N) return;
+    FieldElement out;
+    field_to_mont(&out, &inputs[tid]);
+    outputs[tid] = out;
+}
+
+/**
+ * Converts Montgomery field elements to standard form.
+ */
+extern "C" __global__ void field_from_mont_batch(
+    const FieldElement* __restrict__ inputs,
+    FieldElement* __restrict__ outputs,
+    const int N)
+{
+    int tid = blockIdx.x * blockDim.x + threadIdx.x;
+    if (tid >= N) return;
+    FieldElement out;
+    field_from_mont(&out, &inputs[tid]);
+    outputs[tid] = out;
+}
+
+/**
+ * Montgomery multiplication for inputs already in Montgomery form.
+ */
+extern "C" __global__ void field_mul_batch(
+    const FieldElement* __restrict__ inputs_a,
+    const FieldElement* __restrict__ inputs_b,
+    FieldElement* __restrict__ outputs,
+    const int N)
+{
+    int tid = blockIdx.x * blockDim.x + threadIdx.x;
+    if (tid >= N) return;
+    FieldElement out;
+    field_mul(&out, &inputs_a[tid], &inputs_b[tid]);
+    outputs[tid] = out;
+}
+
+/**
+ * 64-bit multiply helper: outputs low/high parts.
+ */
+extern "C" __global__ void mul64hi_batch(
+    const uint64_t* __restrict__ inputs_a,
+    const uint64_t* __restrict__ inputs_b,
+    uint64_t* __restrict__ outputs_lo,
+    uint64_t* __restrict__ outputs_hi,
+    const int N)
+{
+    int tid = blockIdx.x * blockDim.x + threadIdx.x;
+    if (tid >= N) return;
+    uint64_t a = inputs_a[tid];
+    uint64_t b = inputs_b[tid];
+    outputs_lo[tid] = a * b;
+    outputs_hi[tid] = __umul64hi(a, b);
+}
+
+/**
+ * Debug kernel: compute mul_add for each lane.
+ */
+extern "C" __global__ void mul_add_batch(
+    const uint64_t* __restrict__ inputs_a,
+    const uint64_t* __restrict__ inputs_b,
+    const uint64_t* __restrict__ inputs_acc,
+    const uint64_t* __restrict__ inputs_carry,
+    uint64_t* __restrict__ outputs_sum,
+    uint64_t* __restrict__ outputs_carry,
+    const int N)
+{
+    int tid = blockIdx.x * blockDim.x + threadIdx.x;
+    if (tid >= N) return;
+    uint64_t acc = inputs_acc[tid];
+    uint64_t carry = inputs_carry[tid];
+    mul_add(inputs_a[tid], inputs_b[tid], &acc, &carry);
+    outputs_sum[tid] = acc;
+    outputs_carry[tid] = carry;
+}
+
+/**
+ * Debug kernel for field multiplication: dumps intermediate t arrays.
+ * Only thread 0 writes outputs.
+ */
+extern "C" __global__ void field_mul_debug(
+    const FieldElement* __restrict__ inputs_a,
+    const FieldElement* __restrict__ inputs_b,
+    uint64_t* __restrict__ t_mul_out,
+    uint64_t* __restrict__ t_reduce_out)
+{
+    int tid = blockIdx.x * blockDim.x + threadIdx.x;
+    if (tid != 0) return;
+
+    const FieldElement* a = &inputs_a[0];
+    const FieldElement* b = &inputs_b[0];
+
+    uint64_t t[8] = {0};
+    for (int i = 0; i < 4; i++) {
+        uint64_t carry = 0;
+        for (int j = 0; j < 4; j++) {
+            mul_add(a->limbs[i], b->limbs[j], &t[i + j], &carry);
+        }
+        int k = i + 4;
+        while (carry && k < 8) {
+            uint64_t acc = t[k] + carry;
+            carry = (acc < t[k]) ? 1 : 0;
+            t[k] = acc;
+            k++;
+        }
+    }
+
+    for (int i = 0; i < 8; i++) {
+        t_mul_out[i] = t[i];
+    }
+
+    for (int i = 0; i < 4; i++) {
+        uint64_t m = (uint64_t)(0ULL - t[i]);
+        uint64_t carry = 0;
+        for (int j = 0; j < 4; j++) {
+            mul_add(m, STARK_PRIME[j], &t[i + j], &carry);
+        }
+        int k = i + 4;
+        while (carry && k < 8) {
+            uint64_t acc = t[k] + carry;
+            carry = (acc < t[k]) ? 1 : 0;
+            t[k] = acc;
+            k++;
+        }
+        for (int j = 0; j < 8; j++) {
+            t_reduce_out[i * 8 + j] = t[j];
+        }
+    }
+}
 
 /**
  * Warm-up kernel to initialize CUDA context.

@@ -129,20 +129,26 @@ GPU becomes beneficial for batch sizes > 1,024 hashes.
 - Driver: 550.163.01
 - CUDA Toolkit: 12.4
 
-**CPU (single-threaded, `cargo bench --bench pedersen`, `CPU_BENCH_MAX=1000`)**
+**CPU (single-threaded, `cargo bench --bench pedersen`, `CPU_BENCH_MAX=10`)**
 
 | Batch Size | Time (approx) | Throughput (approx) |
 |------------|---------------|---------------------|
-| 1          | 4.52 ms       | 221 elem/s          |
-| 10         | 46.1 ms       | 217 elem/s          |
-| 100        | 469 ms        | 213 elem/s          |
-| 1,000      | 4.73 s        | 212 elem/s          |
+| 1          | 4.67 ms       | 214 elem/s          |
+| 10         | 46.4 ms       | 216 elem/s          |
 
-`pedersen_hash_single`: ~178 µs
+`pedersen_hash_single`: ~192 µs
 
-**GPU**
+Note: larger CPU batch sizes were skipped to keep runtime short; set `CPU_BENCH_MAX=1000` to include 100/1,000.
 
-GPU benchmarking is currently blocked by a correctness mismatch in the CUDA field arithmetic; results will be added once the kernel passes differential tests.
+**GPU (`cargo bench --features "bench,cuda,cudarc/cuda-12040"`)**
+
+| Batch Size | Time (median) | Throughput (median) |
+|------------|---------------|---------------------|
+| 1,024      | 19.46 ms      | 52.62 Kelem/s       |
+| 4,096      | 19.96 ms      | 205.22 Kelem/s      |
+| 16,384     | 56.79 ms      | 288.52 Kelem/s      |
+
+GPU utilization during the GPU benchmarks reached ~98–100% SM (verified via `nvidia-smi dmon`).
 
 ## Development
 

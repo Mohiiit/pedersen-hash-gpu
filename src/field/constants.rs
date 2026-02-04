@@ -15,8 +15,8 @@ use super::FieldElement;
 pub const STARK_PRIME: [u64; 4] = [
     0x0000000000000001, // limb 0 (least significant)
     0x0000000000000000, // limb 1
-    0x0000000000000011, // limb 2 (17 << 0 in this limb's position)
-    0x0800000000000000, // limb 3 (most significant, 2^251 contribution)
+    0x0000000000000000, // limb 2
+    0x0800000000000011, // limb 3 (most significant, 2^251 + 17*2^192 contributions)
 ];
 
 /// The STARK prime as a hex string for reference.
@@ -84,8 +84,8 @@ mod tests {
         // Check limb structure
         assert_eq!(STARK_PRIME[0], 1); // +1 term
         assert_eq!(STARK_PRIME[1], 0);
-        assert_eq!(STARK_PRIME[2], 17); // 17*2^192 term (17 in position)
-        assert_eq!(STARK_PRIME[3], 0x0800000000000000); // 2^251 term
+        assert_eq!(STARK_PRIME[2], 0); // limb 2 is zero
+        assert_eq!(STARK_PRIME[3], 0x0800000000000011); // 2^251 + 17*2^192 terms
     }
 
     #[test]
