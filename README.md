@@ -1,4 +1,4 @@
-# bonsai-trie-gpu
+# pedersen-hash-gpu
 
 GPU-accelerated Pedersen hashing for Starknet's bonsai-trie.
 
@@ -29,20 +29,20 @@ Add to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-bonsai-trie-gpu = "0.1"
+pedersen-hash-gpu = "0.1"
 ```
 
 For GPU acceleration, enable the `cuda` feature:
 
 ```toml
 [dependencies]
-bonsai-trie-gpu = { version = "0.1", features = ["cuda"] }
+pedersen-hash-gpu = { version = "0.1", features = ["cuda"] }
 ```
 
 ## Quick Start
 
 ```rust
-use bonsai_trie_gpu::pedersen::pedersen_hash;
+use pedersen_hash_gpu::pedersen::pedersen_hash;
 use starknet_types_core::felt::Felt;
 
 let a = Felt::from(314u64);
@@ -53,7 +53,7 @@ let hash = pedersen_hash(&a, &b);
 ### Batch Hashing
 
 ```rust
-use bonsai_trie_gpu::pedersen::pedersen_hash_batch;
+use pedersen_hash_gpu::pedersen::pedersen_hash_batch;
 use starknet_types_core::felt::Felt;
 
 let pairs = vec![

@@ -1,4 +1,4 @@
-//! Error types for bonsai-trie-gpu operations.
+//! Error types for pedersen-hash-gpu operations.
 
 use alloc::string::String;
 use core::fmt;
@@ -61,5 +61,5 @@ impl fmt::Display for Error {
 #[cfg(feature = "std")]
 impl std::error::Error for Error {}
 
-/// Result type alias for bonsai-trie-gpu operations.
+/// Result type alias for pedersen-hash-gpu operations.
 pub type Result<T> = core::result::Result<T, Error>;

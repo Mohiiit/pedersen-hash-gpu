@@ -13,7 +13,7 @@
 //! # Usage
 //!
 //! ```rust,ignore
-//! use bonsai_trie_gpu::gpu::GpuPedersenHasher;
+//! use pedersen_hash_gpu::gpu::GpuPedersenHasher;
 //!
 //! let hasher = GpuPedersenHasher::new()?;
 //! let results = hasher.hash_batch(&inputs_a, &inputs_b)?;

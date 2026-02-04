@@ -6,7 +6,7 @@ use num_bigint::BigUint;
 use num_traits::Num;
 use std::sync::Arc;
 
-use bonsai_trie_gpu::field::{FieldElement, MONTGOMERY_R, STARK_PRIME_HEX};
+use pedersen_hash_gpu::field::{FieldElement, MONTGOMERY_R, STARK_PRIME_HEX};
 
 const MODULE_NAME: &str = "pedersen";
 const PTX: &str = include_str!(concat!(env!("OUT_DIR"), "/pedersen.ptx"));
@@ -272,7 +272,7 @@ fn field_mul_debug_cpu(a: &FieldElement, b: &FieldElement) -> ([u64; 8], [u64; 3
         let m = (0u64).wrapping_sub(t[i]);
         let mut carry = 0u64;
         for j in 0..4 {
-            let (acc, c) = mul_add_cpu(m, bonsai_trie_gpu::field::STARK_PRIME[j], t[i + j], carry);
+            let (acc, c) = mul_add_cpu(m, pedersen_hash_gpu::field::STARK_PRIME[j], t[i + j], carry);
             t[i + j] = acc;
             carry = c;
         }

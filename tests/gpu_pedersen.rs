@@ -1,7 +1,7 @@
 #![cfg(feature = "cuda")]
 
-use bonsai_trie_gpu::gpu::GpuPedersenHasher;
-use bonsai_trie_gpu::pedersen::pedersen_hash;
+use pedersen_hash_gpu::gpu::GpuPedersenHasher;
+use pedersen_hash_gpu::pedersen::pedersen_hash;
 use starknet_types_core::felt::Felt;
 
 use rand::prelude::*;

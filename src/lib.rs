@@ -1,4 +1,4 @@
-//! # bonsai-trie-gpu
+//! # pedersen-hash-gpu
 //!
 //! GPU-accelerated Pedersen hashing for Starknet's bonsai-trie.
 //!
@@ -15,7 +15,7 @@
 //! ## Quick Start
 //!
 //! ```rust
-//! use bonsai_trie_gpu::pedersen::pedersen_hash;
+//! use pedersen_hash_gpu::pedersen::pedersen_hash;
 //! use starknet_types_core::felt::Felt;
 //!
 //! let a = Felt::from(314u64);

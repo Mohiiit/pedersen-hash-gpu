@@ -28,7 +28,7 @@ use super::constants::{pedersen_p0, pedersen_p1, pedersen_p2, pedersen_p3, peder
 /// # Example
 ///
 /// ```rust
-/// use bonsai_trie_gpu::pedersen::pedersen_hash;
+/// use pedersen_hash_gpu::pedersen::pedersen_hash;
 /// use starknet_types_core::felt::Felt;
 ///
 /// let a = Felt::from(314u64);

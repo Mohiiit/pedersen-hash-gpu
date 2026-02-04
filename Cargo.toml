@@ -1,10 +1,10 @@
 [package]
-name = "bonsai-trie-gpu"
+name = "pedersen-hash-gpu"
 version = "0.1.0"
 edition = "2021"
 description = "GPU-accelerated Pedersen hashing for Starknet's bonsai-trie"
 license = "MIT OR Apache-2.0"
-repository = "https://github.com/mohiiit/bonsai-trie-gpu"
+repository = "https://github.com/mohiiit/pedersen-hash-gpu"
 keywords = ["starknet", "pedersen", "gpu", "cuda", "merkle-trie"]
 categories = ["cryptography", "algorithms"]
 build = "build.rs"

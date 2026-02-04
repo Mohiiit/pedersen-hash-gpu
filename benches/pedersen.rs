@@ -5,10 +5,10 @@
 use criterion::{black_box, criterion_group, criterion_main, BenchmarkId, Criterion, Throughput};
 use starknet_types_core::felt::Felt;
 
-use bonsai_trie_gpu::pedersen::{pedersen_hash, pedersen_hash_batch};
+use pedersen_hash_gpu::pedersen::{pedersen_hash, pedersen_hash_batch};
 
 #[cfg(feature = "cuda")]
-use bonsai_trie_gpu::gpu::GpuPedersenHasher;
+use pedersen_hash_gpu::gpu::GpuPedersenHasher;
 
 /// Generate random test data for benchmarks.
 fn generate_test_data(n: usize) -> Vec<(Felt, Felt)> {
@@ -101,7 +101,7 @@ fn bench_reference_comparison(c: &mut Criterion) {
 
 #[cfg(feature = "cuda")]
 fn bench_gpu_batch_sizes(c: &mut Criterion) {
-    if !bonsai_trie_gpu::gpu::is_cuda_available() {
+    if !pedersen_hash_gpu::gpu::is_cuda_available() {
         return;
     }
 
