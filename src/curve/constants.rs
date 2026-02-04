@@ -19,82 +19,82 @@ pub const CURVE_BETA: FieldElement = FieldElement::from_limbs([
 /// Generator point P₀ (Shift point) - x coordinate
 /// Used as the base point to prevent point-at-infinity in Pedersen hash
 pub const PEDERSEN_P0_X: FieldElement = FieldElement::from_limbs([
-    0x3551fde4050ca680,
-    0x16716b0b10229477,
-    0x0ee1b87eb599f167,
+    0x551fde4050ca6804,
+    0x716b0b1022947733,
+    0x00ee1b87eb599f16,
     0x049ee3eba8c16007,
 ]);
 
 /// Generator point P₀ (Shift point) - y coordinate
 pub const PEDERSEN_P0_Y: FieldElement = FieldElement::from_limbs([
-    0x8b3f481e3aaa0f1a,
-    0xc96b10228bf7b795,
-    0x4759ebe3da9e1df0,
-    0x06669b6c2df663da,
+    0xd0405d266e10268a,
+    0x4e621062c0e056c1,
+    0xf346d49d06ea0ed3,
+    0x03ca0cfe4b3bc6dd,
 ]);
 
 /// Generator point P₁ - x coordinate (multiplies a_low, 248 bits)
 pub const PEDERSEN_P1_X: FieldElement = FieldElement::from_limbs([
+    0x1080d17957ebe47b,
+    0x8fa8120b6d56eb0c,
     0x969c748655fca9e5,
-    0x7a6932dba8aa378,
-    0xba8120b6d56eb0c1,
     0x0234287dcbaffe7f,
 ]);
 
 /// Generator point P₁ - y coordinate
 pub const PEDERSEN_P1_Y: FieldElement = FieldElement::from_limbs([
-    0xfeb95e8eff0d707b,
-    0x1df39439afdd4a4c,
-    0xe1f1c8abe7dd2d8b,
-    0x01ef15c18599971b,
+    0x6ed0268ee89e5615,
+    0x940135dd7a6c94cc,
+    0x1e889527d41f4e39,
+    0x03b056f100f96fb2,
 ]);
 
 /// Generator point P₂ - x coordinate (multiplies a_high, 4 bits)
 pub const PEDERSEN_P2_X: FieldElement = FieldElement::from_limbs([
-    0x1080d17957ebe47b,
-    0x8fa8120b6d56eb0c,
-    0xf969c748655fca9e,
+    0xb7a6932dba8aa378,
+    0x99099ec1de5e3018,
+    0x3f9dab2656558f33,
     0x04fa56f376c83db3,
 ]);
 
 /// Generator point P₂ - y coordinate
 pub const PEDERSEN_P2_Y: FieldElement = FieldElement::from_limbs([
-    0x2b52c1f89a3fcdb2,
-    0xb8ab29c7e43bd3e3,
-    0x4a1e6bf4a0ce2bfc,
-    0x06e2b2942e824b10,
+    0x5168f4e80ff5b54d,
+    0x562761f92a7a23b4,
+    0x8113e0c0e47e4401,
+    0x03fa0984c931c9e3,
 ]);
 
 /// Generator point P₃ - x coordinate (multiplies b_low, 248 bits)
 pub const PEDERSEN_P3_X: FieldElement = FieldElement::from_limbs([
-    0xc74709e90f3aa372,
-    0x9099ec1de5e3018b,
-    0x64910f75b45f74b4,
+    0x3aa372f0bd2d6997,
+    0x40c690c74709e90f,
+    0x764910f75b45f74b,
     0x04ba4cc166be8dec,
 ]);
 
 /// Generator point P₃ - y coordinate
 pub const PEDERSEN_P3_Y: FieldElement = FieldElement::from_limbs([
-    0x8ef46a7d9f1e6a77,
-    0x3d45b15d62f1ea6b,
-    0x0bd36b57a3e7c585,
-    0x02ec3c9b4e7e5a53,
+    0x48151f27b24b219c,
+    0xcac5c59a5ce5ae7c,
+    0x4b971e46c4ede85f,
+    0x0040301cf5c1751f,
 ]);
 
 /// Generator point P₄ - x coordinate (multiplies b_high, 4 bits)
 pub const PEDERSEN_P4_X: FieldElement = FieldElement::from_limbs([
-    0x53fb325d36ff12c4,
-    0xca65048d53fb325d,
-    0x0e6cc1c6e44cca8f,
+    0xd36ff12c49a58202,
+    0x2ca65048d53fb325,
+    0x6e44cca8f61a63bb,
     0x054302dcb0e6cc1c,
 ]);
 
 /// Generator point P₄ - y coordinate
 pub const PEDERSEN_P4_Y: FieldElement = FieldElement::from_limbs([
-    0x3a6ff5b08a57a6dd,
-    0x13a7cb2e24b8e1e6,
-    0xe9e9b5e5a9b1a9f7,
-    0x025bd4c8a7b9e6eb,
+    0x879dcc77e99c2426,
+    0xce98ad783c25561a,
+    0xb348046268d8ae25,
+    0x01b77b3e37d13504,
 ]);
 
 #[cfg(test)]
