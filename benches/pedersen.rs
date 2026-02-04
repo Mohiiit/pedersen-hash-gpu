@@ -40,11 +40,19 @@ fn bench_single_hash(c: &mut Criterion) {
 
 fn bench_batch_sizes(c: &mut Criterion) {
     let mut group = c.benchmark_group("pedersen_hash_batch");
+    let cpu_max: usize = std::env::var("CPU_BENCH_MAX")
+        .ok()
+        .and_then(|v| v.parse().ok())
+        .unwrap_or(10_000);
 
-    for size in [1, 10, 100, 1000, 10000].iter() {
-        let data = generate_test_data(*size);
+    for size in [1, 10, 100, 1000, 10000]
+        .iter()
+        .copied()
+        .filter(|size| *size <= cpu_max)
+    {
+        let data = generate_test_data(size);
 
-        group.throughput(Throughput::Elements(*size as u64));
+        group.throughput(Throughput::Elements(size as u64));
 
         group.bench_with_input(BenchmarkId::new("cpu", size), &data, |b, data| {
             b.iter(|| pedersen_hash_batch(black_box(data)))
