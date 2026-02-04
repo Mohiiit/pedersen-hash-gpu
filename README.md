@@ -120,35 +120,53 @@ GPU becomes beneficial for batch sizes > 1,024 hashes.
 
 ### Measured Performance (2026-02-04)
 
-**Environment**
-- Instance: Vast.ai (on-demand)
-- OS: Ubuntu 22.04.4 LTS
-- CPU: Intel Xeon E5-2680 v4 @ 2.40GHz (56 vCPUs)
-- RAM: 62 GiB
+Correctness validated on each instance via:
+- `cargo test --features "cuda,cudarc/cuda-12040" --test gpu_field_debug -- --ignored`
+- `cargo test --features "cuda,cudarc/cuda-12040" --test gpu_pedersen -- --ignored`
+
+**RTX 3060 (Vast.ai, on-demand)**
+
+Environment:
+- OS: Ubuntu 22.04 (image: `nvidia/cuda:12.4.0-devel-ubuntu22.04`)
+- CPU: Intel Xeon E5-2690 v4 @ 2.60GHz (56 vCPUs)
+- RAM: 220 GiB
 - GPU: NVIDIA GeForce RTX 3060 (12 GB)
-- Driver: 550.163.01
+- Driver: 550.144.03
 - CUDA Toolkit: 12.4
 
-**CPU (single-threaded, `cargo bench --bench pedersen`, `CPU_BENCH_MAX=10`)**
+CPU (single-threaded, `CPU_BENCH_MAX=10`):
+- `pedersen_hash_single`: ~178 µs
+- Batch 1: 4.42 ms (~226 elem/s)
+- Batch 10: 43.4 ms (~230 elem/s)
 
-| Batch Size | Time (approx) | Throughput (approx) |
-|------------|---------------|---------------------|
-| 1          | 4.67 ms       | 214 elem/s          |
-| 10         | 46.4 ms       | 216 elem/s          |
+GPU (`cargo bench --features "bench,cuda,cudarc/cuda-12040"`):
+- Batch 1,024: 19.47 ms (~52.60 Kelem/s)
+- Batch 4,096: 19.75 ms (~207.38 Kelem/s)
+- Batch 16,384: 57.26 ms (~286.14 Kelem/s)
 
-`pedersen_hash_single`: ~192 µs
+GPU utilization during benchmarks: peak 100% SM (verified via `nvidia-smi dmon`).
 
-Note: larger CPU batch sizes were skipped to keep runtime short; set `CPU_BENCH_MAX=1000` to include 100/1,000.
+**RTX 3080 (Vast.ai, on-demand)**
 
-**GPU (`cargo bench --features "bench,cuda,cudarc/cuda-12040"`)**
+Environment:
+- OS: Ubuntu 22.04 (image: `nvidia/cuda:12.4.0-devel-ubuntu22.04`)
+- CPU: Intel Core i3-9100 @ 3.60GHz (4 vCPUs)
+- RAM: 15 GiB
+- GPU: NVIDIA GeForce RTX 3080
+- Driver: 550.144.03
+- CUDA Toolkit: 12.4
 
-| Batch Size | Time (median) | Throughput (median) |
-|------------|---------------|---------------------|
-| 1,024      | 19.46 ms      | 52.62 Kelem/s       |
-| 4,096      | 19.96 ms      | 205.22 Kelem/s      |
-| 16,384     | 56.79 ms      | 288.52 Kelem/s      |
+CPU (single-threaded, `CPU_BENCH_MAX=10`):
+- `pedersen_hash_single`: ~139 µs
+- Batch 1: 3.40 ms (~294 elem/s)
+- Batch 10: 33.5 ms (~298 elem/s)
 
-GPU utilization during the GPU benchmarks reached ~98–100% SM (verified via `nvidia-smi dmon`).
+GPU (`CPU_BENCH_MAX=0` to skip CPU batches):
+- Batch 1,024: 22.21 ms (~46.11 Kelem/s)
+- Batch 4,096: 21.23 ms (~192.97 Kelem/s)
+- Batch 16,384: 23.00 ms (~712.28 Kelem/s)
+
+GPU utilization during benchmarks: peak 100% SM (verified via `nvidia-smi dmon`).
 
 ## Development
 
