@@ -65,8 +65,8 @@ impl GpuPedersenHasher {
         }
 
         let device = &self.context.device;
-        let d_a = device.htod_copy(host_a.as_slice()).map_err(cuda_err)?;
-        let d_b = device.htod_copy(host_b.as_slice()).map_err(cuda_err)?;
+        let d_a = device.htod_copy(host_a).map_err(cuda_err)?;
+        let d_b = device.htod_copy(host_b).map_err(cuda_err)?;
         let mut d_out = device
             .alloc_zeros::<CudaFieldElement>(n)
             .map_err(cuda_err)?;

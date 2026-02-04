@@ -16,9 +16,7 @@ impl GpuContext {
     /// Create a new CUDA context for the given device ID.
     pub fn new(device_id: u32) -> Result<Self> {
         let device = CudaDevice::new(device_id as usize).map_err(cuda_err)?;
-        Ok(Self {
-            device: Arc::new(device),
-        })
+        Ok(Self { device })
     }
 }
 

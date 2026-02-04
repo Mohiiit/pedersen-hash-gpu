@@ -1,6 +1,8 @@
 //! CUDA kernel loading and launch helpers.
 
-use cudarc::driver::{CudaDevice, CudaSlice, DeviceRepr, LaunchAsync};
+use cudarc::driver::{CudaDevice, CudaSlice, DeviceRepr, LaunchAsync, LaunchConfig, ValidAsZeroBits};
+use cudarc::nvrtc::Ptx;
+use std::sync::Arc;
 
 use crate::error::{Error, Result};
 
@@ -14,21 +16,30 @@ pub struct CudaFieldElement {
 }
 
 unsafe impl DeviceRepr for CudaFieldElement {}
+unsafe impl ValidAsZeroBits for CudaFieldElement {}
 
 pub struct PedersenKernel;
 
 impl PedersenKernel {
-    pub fn load(device: &CudaDevice) -> Result<Self> {
+    pub fn load(device: &Arc<CudaDevice>) -> Result<Self> {
+        let ptx = Ptx::from_src(PTX);
         device
-            .load_ptx(PTX, MODULE_NAME, &["pedersen_hash_batch", "warmup_kernel"])
+            .load_ptx(ptx, MODULE_NAME, &["pedersen_hash_batch", "warmup_kernel"])
             .map_err(cuda_err)?;
         Ok(Self)
     }
 
-    pub fn warmup(&self, device: &CudaDevice) -> Result<()> {
-        let func = device.get_func(MODULE_NAME, "warmup_kernel").map_err(cuda_err)?;
+    pub fn warmup(&self, device: &Arc<CudaDevice>) -> Result<()> {
+        let func = device
+            .get_func(MODULE_NAME, "warmup_kernel")
+            .ok_or_else(|| Error::CudaError("missing warmup_kernel".to_string()))?;
+        let cfg = LaunchConfig {
+            grid_dim: (1, 1, 1),
+            block_dim: (1, 1, 1),
+            shared_mem_bytes: 0,
+        };
         unsafe {
-            func.launch([1, 1, 1], [1, 1, 1], ())
+            func.launch(cfg, ())
                 .map_err(cuda_err)?;
         }
         Ok(())
@@ -36,7 +47,7 @@ impl PedersenKernel {
 
     pub fn launch_batch(
         &self,
-        device: &CudaDevice,
+        device: &Arc<CudaDevice>,
         inputs_a: &CudaSlice<CudaFieldElement>,
         inputs_b: &CudaSlice<CudaFieldElement>,
         outputs: &mut CudaSlice<CudaFieldElement>,
@@ -44,14 +55,17 @@ impl PedersenKernel {
         block_size: u32,
     ) -> Result<()> {
         let grid_x = ((n as u32) + block_size - 1) / block_size;
-        let func = device.get_func(MODULE_NAME, "pedersen_hash_batch").map_err(cuda_err)?;
+        let func = device
+            .get_func(MODULE_NAME, "pedersen_hash_batch")
+            .ok_or_else(|| Error::CudaError("missing pedersen_hash_batch".to_string()))?;
+        let cfg = LaunchConfig {
+            grid_dim: (grid_x, 1, 1),
+            block_dim: (block_size, 1, 1),
+            shared_mem_bytes: 0,
+        };
         unsafe {
-            func.launch(
-                [grid_x, 1, 1],
-                [block_size, 1, 1],
-                (inputs_a, inputs_b, outputs, n as i32),
-            )
-            .map_err(cuda_err)?;
+            func.launch(cfg, (inputs_a, inputs_b, outputs, n as i32))
+                .map_err(cuda_err)?;
         }
         Ok(())
     }
