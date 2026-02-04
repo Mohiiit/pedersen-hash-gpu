@@ -2,6 +2,15 @@
 
 GPU-accelerated Pedersen hashing for Starknet's bonsai-trie.
 
+## Results (2026-02-04)
+
+| GPU | GPU Batch | GPU Throughput | CPU Throughput (batch 10) | Speedup |
+|-----|-----------|----------------|---------------------------|---------|
+| RTX 3060 | 16,384 | 286.14 Kelem/s | 230 elem/s | ~1,244× |
+| RTX 3080 | 16,384 | 712.28 Kelem/s | 298 elem/s | ~2,390× |
+
+Speedup is GPU throughput vs CPU batch‑10 throughput on the same instance.
+
 ## Overview
 
 This crate provides high-performance Pedersen hash computation using CUDA, designed to accelerate Merkle tree operations in Starknet's state management. It targets 10-100× throughput improvement for batched Pedersen hashing by parallelizing elliptic curve scalar multiplications across thousands of CUDA cores.
