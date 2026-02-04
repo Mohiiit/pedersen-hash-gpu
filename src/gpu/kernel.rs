@@ -3,6 +3,7 @@
 use cudarc::driver::{CudaDevice, CudaSlice, DeviceRepr, LaunchAsync, LaunchConfig, ValidAsZeroBits};
 use cudarc::nvrtc::Ptx;
 use std::sync::Arc;
+use std::vec::Vec;
 
 use crate::error::{Error, Result};
 
@@ -39,7 +40,7 @@ impl PedersenKernel {
             shared_mem_bytes: 0,
         };
         unsafe {
-            let mut params: [*mut core::ffi::c_void; 0] = [];
+            let mut params: Vec<*mut core::ffi::c_void> = Vec::new();
             func.launch(cfg, &mut params)
                 .map_err(cuda_err)?;
         }
