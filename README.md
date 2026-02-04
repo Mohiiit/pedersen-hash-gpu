@@ -118,6 +118,32 @@ cargo bench --features bench
 
 GPU becomes beneficial for batch sizes > 1,024 hashes.
 
+### Measured Performance (2026-02-04)
+
+**Environment**
+- Instance: Vast.ai (on-demand)
+- OS: Ubuntu 22.04.4 LTS
+- CPU: Intel Xeon E5-2680 v4 @ 2.40GHz (56 vCPUs)
+- RAM: 62 GiB
+- GPU: NVIDIA GeForce RTX 3060 (12 GB)
+- Driver: 550.163.01
+- CUDA Toolkit: 12.4
+
+**CPU (single-threaded, `cargo bench --bench pedersen`, `CPU_BENCH_MAX=1000`)**
+
+| Batch Size | Time (approx) | Throughput (approx) |
+|------------|---------------|---------------------|
+| 1          | 4.52 ms       | 221 elem/s          |
+| 10         | 46.1 ms       | 217 elem/s          |
+| 100        | 469 ms        | 213 elem/s          |
+| 1,000      | 4.73 s        | 212 elem/s          |
+
+`pedersen_hash_single`: ~178 µs
+
+**GPU**
+
+GPU benchmarking is currently blocked by a correctness mismatch in the CUDA field arithmetic; results will be added once the kernel passes differential tests.
+
 ## Development
 
 ### Building
