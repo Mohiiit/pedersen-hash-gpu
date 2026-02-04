@@ -48,8 +48,8 @@ __constant__ uint64_t MONT_INV = 0xffffffffffffffffULL;
 __constant__ uint64_t P_MINUS_2[4] = {
     0xffffffffffffffffULL,
     0xffffffffffffffffULL,
-    0x0000000000000010ULL,
-    0x07ffffffffffffffULL
+    0xffffffffffffffffULL,
+    0x0800000000000010ULL
 };
 
 // Mask for extracting the low 248 bits.
