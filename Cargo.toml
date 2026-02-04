@@ -74,3 +74,6 @@ opt-level = 3
 [profile.bench]
 lto = true
 codegen-units = 1
+
+[patch.crates-io]
+size-of = { path = "vendor/size-of" }
