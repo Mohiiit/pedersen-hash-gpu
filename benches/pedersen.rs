@@ -7,6 +7,9 @@ use starknet_types_core::felt::Felt;
 
 use bonsai_trie_gpu::pedersen::{pedersen_hash, pedersen_hash_batch};
 
+#[cfg(feature = "cuda")]
+use bonsai_trie_gpu::gpu::GpuPedersenHasher;
+
 /// Generate random test data for benchmarks.
 fn generate_test_data(n: usize) -> Vec<(Felt, Felt)> {
     use rand::prelude::*;
@@ -51,6 +54,7 @@ fn bench_batch_sizes(c: &mut Criterion) {
     group.finish();
 }
 
+#[cfg(feature = "reference")]
 fn bench_reference_comparison(c: &mut Criterion) {
     // Compare with starknet-crypto reference implementation
     let a = Felt::from(314u64);
@@ -87,10 +91,60 @@ fn bench_reference_comparison(c: &mut Criterion) {
     group.finish();
 }
 
+#[cfg(feature = "cuda")]
+fn bench_gpu_batch_sizes(c: &mut Criterion) {
+    if !bonsai_trie_gpu::gpu::is_cuda_available() {
+        return;
+    }
+
+    let hasher = GpuPedersenHasher::new().expect("failed to create GPU hasher");
+    let mut group = c.benchmark_group("pedersen_hash_batch_gpu");
+
+    for size in [1024usize, 4096, 16384].iter() {
+        let data = generate_test_data(*size);
+
+        group.throughput(Throughput::Elements(*size as u64));
+        group.bench_with_input(BenchmarkId::new("gpu", size), &data, |b, data| {
+            b.iter(|| {
+                hasher
+                    .hash_batch_pairs(black_box(data))
+                    .expect("GPU hash failed")
+            })
+        });
+    }
+
+    group.finish();
+}
+
+#[cfg(all(feature = "cuda", feature = "reference"))]
 criterion_group!(
     benches,
     bench_single_hash,
     bench_batch_sizes,
     bench_reference_comparison,
+    bench_gpu_batch_sizes,
+);
+
+#[cfg(all(feature = "cuda", not(feature = "reference")))]
+criterion_group!(
+    benches,
+    bench_single_hash,
+    bench_batch_sizes,
+    bench_gpu_batch_sizes,
+);
+
+#[cfg(all(not(feature = "cuda"), feature = "reference"))]
+criterion_group!(
+    benches,
+    bench_single_hash,
+    bench_batch_sizes,
+    bench_reference_comparison,
+);
+
+#[cfg(all(not(feature = "cuda"), not(feature = "reference")))]
+criterion_group!(
+    benches,
+    bench_single_hash,
+    bench_batch_sizes,
 );
 criterion_main!(benches);
