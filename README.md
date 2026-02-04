@@ -104,19 +104,14 @@ src/
 Run benchmarks with:
 
 ```bash
-cargo bench --features bench
+CPU_BENCH_MAX=10 cargo bench --features bench
 ```
 
-### Expected Performance
+For GPU benchmarks:
 
-| Batch Size | CPU (single-threaded) | GPU (RTX 4090) | Speedup |
-|------------|----------------------|----------------|---------|
-| 1          | ~13 µs               | ~50 µs         | 0.3×    |
-| 1,000      | ~13 ms               | ~1 ms          | 13×     |
-| 10,000     | ~130 ms              | ~5 ms          | 26×     |
-| 100,000    | ~1.3 s               | ~25 ms         | 52×     |
-
-GPU becomes beneficial for batch sizes > 1,024 hashes.
+```bash
+CPU_BENCH_MAX=0 CUDA_ARCH=sm_86 cargo bench --features "bench,cuda,cudarc/cuda-12040"
+```
 
 ### Measured Performance (2026-02-04)
 
@@ -219,15 +214,6 @@ The crate includes differential tests against `starknet-crypto`:
 ```bash
 cargo test differential
 ```
-
-## Roadmap
-
-- [x] Phase 1: Field arithmetic module
-- [x] Phase 2: Elliptic curve operations
-- [x] Phase 3: Pedersen hash (CPU)
-- [ ] Phase 4: CUDA kernel implementation
-- [ ] Phase 5: Batch optimization with Pippenger's algorithm
-- [ ] Phase 6: Integration with bonsai-trie
 
 ## License
 
