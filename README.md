@@ -143,6 +143,25 @@ RUST_LOG=debug cargo test
 cargo test --release -- --ignored proptest
 ```
 
+### GPU Testing (CUDA)
+
+GPU tests are ignored by default. On a CUDA-capable machine, run:
+
+```bash
+# Compile CUDA kernel with nvcc and run ignored GPU tests
+CUDA_ARCH=sm_80 cargo test --features cuda -- --ignored
+```
+
+If `nvcc` is not on your PATH:
+
+```bash
+NVCC=/path/to/nvcc CUDA_ARCH=sm_80 cargo test --features cuda -- --ignored
+```
+
+Notes:
+- `CUDA_ARCH` should match your GPU (e.g., `sm_75`, `sm_80`, `sm_90`).
+- On macOS, you can still run CPU-only tests with `cargo test`.
+
 ### Differential Testing
 
 The crate includes differential tests against `starknet-crypto`:

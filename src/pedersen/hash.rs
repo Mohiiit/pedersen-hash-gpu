@@ -119,7 +119,16 @@ pub fn pedersen_hash_array(elements: &[Felt]) -> Felt {
 ///
 /// Vector of hash results, one for each input pair.
 pub fn pedersen_hash_batch(pairs: &[(Felt, Felt)]) -> Vec<Felt> {
-    // TODO: When cuda feature is enabled, use GPU batch computation
+    #[cfg(feature = "cuda")]
+    {
+        if pairs.len() >= crate::gpu::GPU_BATCH_THRESHOLD && crate::gpu::is_cuda_available() {
+            if let Ok(hasher) = crate::gpu::GpuPedersenHasher::new() {
+                if let Ok(results) = hasher.hash_batch_pairs(pairs) {
+                    return results;
+                }
+            }
+        }
+    }
     pairs.iter().map(|(a, b)| pedersen_hash(a, b)).collect()
 }
 
