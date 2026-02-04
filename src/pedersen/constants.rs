@@ -25,65 +25,65 @@ pub const HIGH_SHIFT: usize = 248;
 
 /// Generator point P₀ (Shift point)
 ///
-/// X = 0x49ee3eba8c1600700ee1b87eb599f16716b0b1022947733551fde4050ca6804
-/// Y = 0x6669b6c2df663da4759ebe3da9e1df0c96b10228bf7b7958b3f481e3aaa0f1a
+/// X = 0x049ee3eba8c1600700ee1b87eb599f16716b0b1022947733551fde4050ca6804
+/// Y = 0x03ca0cfe4b3bc6ddf346d49d06ea0ed34e621062c0e056c1d0405d266e10268a
 pub fn pedersen_p0() -> AffinePoint {
     AffinePoint::new_unchecked(
-        FieldElement::from_hex("0x49ee3eba8c1600700ee1b87eb599f16716b0b1022947733551fde4050ca6804")
+        FieldElement::from_hex("0x049ee3eba8c1600700ee1b87eb599f16716b0b1022947733551fde4050ca6804")
             .expect("P0.x is valid"),
-        FieldElement::from_hex("0x6669b6c2df663da4759ebe3da9e1df0c96b10228bf7b7958b3f481e3aaa0f1a")
+        FieldElement::from_hex("0x03ca0cfe4b3bc6ddf346d49d06ea0ed34e621062c0e056c1d0405d266e10268a")
             .expect("P0.y is valid"),
     )
 }
 
 /// Generator point P₁ (multiplies a_low, 248 bits)
 ///
-/// X = 0x234287dcbaffe7f969c748655fca9e58fa8120b6d56eb0c1080d17957ebe47b
-/// Y = 0x1ef15c18599971b7beced415a40f0c7deacfd9b0d1819e03d723d8bc943cfca
+/// X = 0x0234287dcbaffe7f969c748655fca9e58fa8120b6d56eb0c1080d17957ebe47b
+/// Y = 0x03b056f100f96fb21e889527d41f4e39940135dd7a6c94cc6ed0268ee89e5615
 pub fn pedersen_p1() -> AffinePoint {
     AffinePoint::new_unchecked(
-        FieldElement::from_hex("0x234287dcbaffe7f969c748655fca9e58fa8120b6d56eb0c1080d17957ebe47b")
+        FieldElement::from_hex("0x0234287dcbaffe7f969c748655fca9e58fa8120b6d56eb0c1080d17957ebe47b")
             .expect("P1.x is valid"),
-        FieldElement::from_hex("0x1ef15c18599971b7beced415a40f0c7deacfd9b0d1819e03d723d8bc943cfca")
+        FieldElement::from_hex("0x03b056f100f96fb21e889527d41f4e39940135dd7a6c94cc6ed0268ee89e5615")
             .expect("P1.y is valid"),
     )
 }
 
 /// Generator point P₂ (multiplies a_high, 4 bits)
 ///
-/// X = 0x4fa56f376c83db33f9dab2656558f3399099ec1de5e3018b7a6932dba8aa378
-/// Y = 0x4ba4cc166be8dec764910f75b45f74b40c690c74709e90f3aa372f0bd2d6997
+/// X = 0x04fa56f376c83db33f9dab2656558f3399099ec1de5e3018b7a6932dba8aa378
+/// Y = 0x03fa0984c931c9e38113e0b6ba5a2556eff35160c2c197e20f6f0ee12f3f2e66
 pub fn pedersen_p2() -> AffinePoint {
     AffinePoint::new_unchecked(
-        FieldElement::from_hex("0x4fa56f376c83db33f9dab2656558f3399099ec1de5e3018b7a6932dba8aa378")
+        FieldElement::from_hex("0x04fa56f376c83db33f9dab2656558f3399099ec1de5e3018b7a6932dba8aa378")
             .expect("P2.x is valid"),
-        FieldElement::from_hex("0x4ba4cc166be8dec764910f75b45f74b40c690c74709e90f3aa372f0bd2d6997")
+        FieldElement::from_hex("0x03fa0984c931c9e38113e0b6ba5a2556eff35160c2c197e20f6f0ee12f3f2e66")
             .expect("P2.y is valid"),
     )
 }
 
 /// Generator point P₃ (multiplies b_low, 248 bits)
 ///
-/// X = 0x4ba4cc166be8dec764910f75b45f74b40c690c74709e90f3aa372f0bd2d6997
-/// Y = 0x6a0edc3bda0e8ea99e05d8f833cdf7ae4c9a6ad8b2e3c6e6aab0cdb4f5f4a9b
+/// X = 0x04ba4cc166be8dec764910f75b45f74b40c690c74709e90f3aa372f0bd2d6997
+/// Y = 0x0040301cf5c1751f4b971e46c4ede85fcac5c59a5ce5ae7c48151f27b24b219c
 pub fn pedersen_p3() -> AffinePoint {
     AffinePoint::new_unchecked(
-        FieldElement::from_hex("0x4ba4cc166be8dec764910f75b45f74b40c690c74709e90f3aa372f0bd2d6997")
+        FieldElement::from_hex("0x04ba4cc166be8dec764910f75b45f74b40c690c74709e90f3aa372f0bd2d6997")
             .expect("P3.x is valid"),
-        FieldElement::from_hex("0x6a0edc3bda0e8ea99e05d8f833cdf7ae4c9a6ad8b2e3c6e6aab0cdb4f5f4a9b")
+        FieldElement::from_hex("0x0040301cf5c1751f4b971e46c4ede85fcac5c59a5ce5ae7c48151f27b24b219c")
             .expect("P3.y is valid"),
     )
 }
 
 /// Generator point P₄ (multiplies b_high, 4 bits)
 ///
-/// X = 0x54302dcb0e6cc1c6e44cca8f61a63bb2ca65048d53fb325d36ff12c49a58202
-/// Y = 0x64a0fb632ca0548bc06547d70e98ac85c9b7b06bb92b2a05f4e4b9fde7f7d2b
+/// X = 0x054302dcb0e6cc1c6e44cca8f61a63bb2ca65048d53fb325d36ff12c49a58202
+/// Y = 0x01b77b3e37d13504bed68c4f1d6f6ca0f2f62fbd0e61cdd30491cf9039a72533
 pub fn pedersen_p4() -> AffinePoint {
     AffinePoint::new_unchecked(
-        FieldElement::from_hex("0x54302dcb0e6cc1c6e44cca8f61a63bb2ca65048d53fb325d36ff12c49a58202")
+        FieldElement::from_hex("0x054302dcb0e6cc1c6e44cca8f61a63bb2ca65048d53fb325d36ff12c49a58202")
             .expect("P4.x is valid"),
-        FieldElement::from_hex("0x64a0fb632ca0548bc06547d70e98ac85c9b7b06bb92b2a05f4e4b9fde7f7d2b")
+        FieldElement::from_hex("0x01b77b3e37d13504bed68c4f1d6f6ca0f2f62fbd0e61cdd30491cf9039a72533")
             .expect("P4.y is valid"),
     )
 }
