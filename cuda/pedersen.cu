@@ -202,10 +202,10 @@ __device__ __forceinline__ void field_add(FieldElement* result, const FieldEleme
     if (carry || field_ge_prime(result)) {
         uint64_t borrow = 0;
         for (int i = 0; i < 4; i++) {
-            uint64_t bi = STARK_PRIME[i] + borrow;
-            uint64_t diff = result->limbs[i] - bi;
-            borrow = (result->limbs[i] < bi) ? 1 : 0;
-            result->limbs[i] = diff;
+            unsigned __int128 bi = (unsigned __int128)STARK_PRIME[i] + borrow;
+            unsigned __int128 ri = (unsigned __int128)result->limbs[i];
+            result->limbs[i] = (uint64_t)(ri - bi);
+            borrow = (ri < bi) ? 1 : 0;
         }
     }
 }
@@ -215,10 +215,10 @@ __device__ __forceinline__ void field_sub(FieldElement* result, const FieldEleme
     uint64_t borrow = 0;
 
     for (int i = 0; i < 4; i++) {
-        uint64_t bi = b->limbs[i] + borrow;
-        uint64_t diff = a->limbs[i] - bi;
-        borrow = (a->limbs[i] < bi) ? 1 : 0;
-        result->limbs[i] = diff;
+        unsigned __int128 bi = (unsigned __int128)b->limbs[i] + borrow;
+        unsigned __int128 ai = (unsigned __int128)a->limbs[i];
+        result->limbs[i] = (uint64_t)(ai - bi);
+        borrow = (ai < bi) ? 1 : 0;
     }
 
     if (borrow) {
