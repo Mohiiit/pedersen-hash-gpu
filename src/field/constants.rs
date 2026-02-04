@@ -34,16 +34,16 @@ pub const NUM_LIMBS: usize = 4;
 pub const MONTGOMERY_R: [u64; 4] = [
     0xffffffffffffffe1, // These values are computed as 2^256 mod P
     0xffffffffffffffff,
-    0xffffffffffffffee,
-    0x07ffffffffffffff,
+    0xffffffffffffffff,
+    0x07fffffffffffdf0,
 ];
 
 /// R^2 mod P (for Montgomery multiplication)
 pub const MONTGOMERY_R2: [u64; 4] = [
-    0xfffffffffff9227,
-    0x10000000000000,
-    0x1c0000000000000,
-    0x0700000000000000,
+    0xfffffd737e000401,
+    0x00000001330fffff,
+    0xffffffffff6f8000,
+    0x07ffd4ab5e008810,
 ];
 
 /// -P^(-1) mod 2^64 (Montgomery constant for reduction)

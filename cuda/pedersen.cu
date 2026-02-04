@@ -30,15 +30,15 @@ __constant__ uint64_t STARK_PRIME[4] = {
 __constant__ uint64_t MONT_R[4] = {
     0xffffffffffffffe1ULL,
     0xffffffffffffffffULL,
-    0xffffffffffffffeeULL,
-    0x07ffffffffffffffULL
+    0xffffffffffffffffULL,
+    0x07fffffffffffdf0ULL
 };
 
 __constant__ uint64_t MONT_R2[4] = {
-    0x0fffffffffff9227ULL,
-    0x0010000000000000ULL,
-    0x001c000000000000ULL,
-    0x0700000000000000ULL
+    0xfffffd737e000401ULL,
+    0x00000001330fffffULL,
+    0xffffffffff6f8000ULL,
+    0x07ffd4ab5e008810ULL
 };
 
 // -P^(-1) mod 2^64 (Montgomery constant for reduction)
