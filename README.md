@@ -1,6 +1,6 @@
 # pedersen-hash-gpu
 
-GPU-accelerated Pedersen hashing for Starknet's bonsai-trie.
+GPU-accelerated Pedersen hashing for Starknet.
 
 ## Results (2026-02-04)
 
