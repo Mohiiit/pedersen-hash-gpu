@@ -39,7 +39,8 @@ impl PedersenKernel {
             shared_mem_bytes: 0,
         };
         unsafe {
-            func.launch(cfg, ())
+            let mut params: [*mut core::ffi::c_void; 0] = [];
+            func.launch(cfg, &mut params)
                 .map_err(cuda_err)?;
         }
         Ok(())
